@@ -1,0 +1,54 @@
+# WiFi Credentials (DO NOT COMMIT)
+credentials.h
+**/credentials.h
+
+# Arduino Build Files
+*.hex
+*.bin
+*.elf
+*.eep
+*.map
+*.lst
+*.sym
+
+# IDE Files
+.vscode/
+.idea/
+*.code-workspace
+
+# OS Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Backup Files
+*.bak
+*.backup
+*~
+
+# Compiled Object Files
+*.o
+*.a
+*.so
+*.dll
+*.dylib
+
+# Build Directories
+build/
+.build/
+bin/
+obj/
+
+# Arduino IDE
+*.ino.cpp
+*.ino.globals.h
+__pycache__/
+*.py[cod]
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.log
