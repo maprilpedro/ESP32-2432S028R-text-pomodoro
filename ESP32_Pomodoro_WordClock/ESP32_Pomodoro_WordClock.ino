@@ -38,6 +38,7 @@ Date: November 2025
 #include <Adafruit_ILI9341.h>
 #include <Adafruit_GFX.h>
 #include <XPT2046_Touchscreen.h>  // Touch screen library
+#include <esp_task_wdt.h>          // Watchdog timer
 
 // ==================== TOUCHSCREEN SETUP ====================
 #define TOUCH_CS 33    // Touch screen chip select
@@ -582,6 +583,11 @@ void setup() {
   Serial.begin(115200);
   Serial.println("ESP32 Pomodoro Timer Starting...");
 
+  // Initialize watchdog timer (10 seconds timeout)
+  esp_task_wdt_init(10, true);  // 10 second timeout, panic on timeout
+  esp_task_wdt_add(NULL);       // Add current task to watchdog
+  Serial.println("Watchdog timer enabled (10s timeout)");
+
   // Initialize RGB LED pins
   pinMode(REDPIN, OUTPUT);
   pinMode(GREENPIN, OUTPUT);
@@ -605,6 +611,15 @@ void setup() {
   memset(Strippos, 0, sizeof(Strippos));
   memset(LastStrippos, 0, sizeof(LastStrippos));
 
+  // Validate credentials
+  #ifndef WIFI_SSID
+    Serial.println("ERROR: credentials.h not found or invalid!");
+    Serial.println("Please copy credentials.h.example to credentials.h");
+    Serial.println("System will continue without WiFi...");
+  #else
+    Serial.printf("WiFi credentials loaded: %s\n", WIFI_SSID);
+  #endif
+
   // Load settings from flash
   FLASHSTOR.begin("Pomodoro", false);
   Mem.PomodoroWorkMinutes = FLASHSTOR.getUInt("workMin", 25);
@@ -626,6 +641,9 @@ void setup() {
 
 // ==================== MAIN LOOP ====================
 void loop() {
+  // Reset watchdog timer (must be called regularly)
+  esp_task_wdt_reset();
+
   // Handle touch input (non-blocking)
   HandleTouch();
 
@@ -651,5 +669,5 @@ void loop() {
     }
   }
 
-  delay(10);  // Small delay to prevent watchdog issues
+  delay(10);  // Small delay for stability
 }
